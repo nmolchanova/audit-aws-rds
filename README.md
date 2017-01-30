@@ -14,15 +14,10 @@ This repo is designed to work with CloudCoreo. It will monitor RDS against best 
 
 ## Required variables with no default
 
-### `AUDIT_AWS_RDS_ALERT_RECIPIENT`:
-  * description: Enter the email address(es) that will receive notifiers. If more than one, separate each with a comma.
+**None**
 
 
 ## Required variables with default
-
-### `AUDIT_AWS_RDS_ALERT_LIST`:
-  * description: Which alerts would you like to check for? Default is all RDS alerts.
-  * default: rds-short-backup-retention-period, rds-no-auto-minor-version-upgrade, rds-db-publicly-accessible, rds-inventory
 
 ### `AUDIT_AWS_RDS_ALLOW_EMPTY`:
   * description: Would you like to receive empty reports? Options - true / false. Default is false.
@@ -41,11 +36,15 @@ This repo is designed to work with CloudCoreo. It will monitor RDS against best 
   * default: nothing
 
 ### `AUDIT_AWS_RDS_HTML_REPORT`:
-  * description: Would you like to send a full RDS report? This is an email that details any violations found and includes a list of the violating cloud objects. Options - notify / nothing. Default is notify.
-  * default: notify
+  * description: Would you like to send a full RDS report? This is an email that details any violations found and includes a list of the violating cloud objects. Options - notify / nothing. Default is nothing.
+  * default: nothing
 
 
 ## Optional variables with default
+
+### `AUDIT_AWS_RDS_ALERT_LIST`:
+  * description: Which alerts would you like to check for? Default is all RDS alerts.
+  * default: rds-short-backup-retention-period, rds-no-auto-minor-version-upgrade, rds-db-publicly-accessible, rds-inventory
 
 ### `AUDIT_AWS_RDS_OWNER_TAG`:
   * description: Enter an AWS tag whose value is an email address of owner of the RDS object. (Optional)
@@ -54,7 +53,8 @@ This repo is designed to work with CloudCoreo. It will monitor RDS against best 
 
 ## Optional variables with no default
 
-**None**
+### `AUDIT_AWS_RDS_ALERT_RECIPIENT`:
+  * description: Enter the email address(es) that will receive notifiers. If more than one, separate each with a comma.
 
 ## Tags
 1. Audit
