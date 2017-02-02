@@ -1,5 +1,5 @@
 
-coreo_aws_advisor_alert "rds-inventory" do
+coreo_aws_rule "rds-inventory" do
   action :define
   service :rds
   # link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
@@ -12,11 +12,11 @@ coreo_aws_advisor_alert "rds-inventory" do
   objectives ["db_instances"]
   audit_objects ["object.db_instances.db_instance_identifier"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.db_instances.db_instance_identifier"
 end
 
-coreo_aws_advisor_alert "rds-short-backup-retention-period" do
+coreo_aws_rule "rds-short-backup-retention-period" do
   action :define
   service :rds
   link "http://kb.cloudcoreo.com/mydoc_rds-short-backup-retention-period.html"
@@ -28,11 +28,11 @@ coreo_aws_advisor_alert "rds-short-backup-retention-period" do
   objectives ["db_instances"]
   audit_objects ["db_instances.backup_retention_period"]
   operators ["<"]
-  alert_when [30]
+  raise_when [30]
   id_map "object.db_instances.db_instance_identifier"
 end
 
-coreo_aws_advisor_alert "rds-no-auto-minor-version-upgrade" do
+coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
   action :define
   service :rds
   link "http://kb.cloudcoreo.com/mydoc_rds-no-auto-minor-version-upgrade.html"
@@ -44,11 +44,11 @@ coreo_aws_advisor_alert "rds-no-auto-minor-version-upgrade" do
   objectives ["db_instances"]
   audit_objects ["db_instances.auto_minor_version_upgrade"]
   operators ["=="]
-  alert_when [false]
+  raise_when [false]
   id_map "object.db_instances.db_instance_identifier"
 end
 
-coreo_aws_advisor_alert "rds-db-publicly-accessible" do
+coreo_aws_rule "rds-db-publicly-accessible" do
   action :define
   service :rds
   link "http://kb.cloudcoreo.com/mydoc_rds-db-publicly-accessible.html"
@@ -60,13 +60,13 @@ coreo_aws_advisor_alert "rds-db-publicly-accessible" do
   objectives ["db_instances"]
   audit_objects ["db_instances.publicly_accessible"]
   operators ["=="]
-  alert_when [true]
+  raise_when [true]
   id_map "object.db_instances.db_instance_identifier"
 end
 
-coreo_aws_advisor_rds "advise-rds" do
-  alerts ${AUDIT_AWS_RDS_ALERT_LIST}
-  action :advise
+coreo_aws_rule_runner_rds "advise-rds" do
+  rules ${AUDIT_AWS_RDS_ALERT_LIST}
+  action :run
   regions ${AUDIT_AWS_RDS_REGIONS}
 end
 
@@ -74,10 +74,10 @@ coreo_uni_util_jsrunner "rds-aggregate" do
   action :run
   json_input '{"composite name":"PLAN::stack_name",
   "plan name":"PLAN::name",
-  "number_of_checks":"COMPOSITE::coreo_aws_advisor_rds.advise-rds.number_checks",
-  "number_of_violations":"COMPOSITE::coreo_aws_advisor_rds.advise-rds.number_violations",
-  "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_rds.advise-rds.number_ignored_violations",
-  "violations":COMPOSITE::coreo_aws_advisor_rds.advise-rds.report}'
+  "number_of_checks":"COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_checks",
+  "number_of_violations":"COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_violations",
+  "number_violations_ignored":"COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_ignored_violations",
+  "violations":COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report}'
   function <<-EOH
 
 var_regions = "${AUDIT_AWS_RDS_REGIONS}";
@@ -189,7 +189,7 @@ end
 coreo_uni_util_variables "rds-for-suppression-update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_rds.advise-rds.report' => 'COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-rds.return'}
+                {'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report' => 'COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-rds.return'}
             ])
 end
 
@@ -291,6 +291,6 @@ COMPOSITE::coreo_uni_util_jsrunner.tags-rollup-rds.return
   '
   payload_type 'text'
   endpoint ({
-      :to => '${AUDIT_AWS_RDS_ALERT_RECIPIENT}', :subject => 'CloudCoreo rds advisor alerts on PLAN::stack_name :: PLAN::name'
+      :to => '${AUDIT_AWS_RDS_ALERT_RECIPIENT}', :subject => 'CloudCoreo rds rule results on PLAN::stack_name :: PLAN::name'
   })
 end
