@@ -245,7 +245,7 @@ end
 coreo_uni_util_jsrunner "jsrunner-process-alert-list-rds" do
   action :run
   provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_advisor_rds.advise-rds.report}'
+  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report}'
   packages([
                {
                    :name => "js-yaml",
