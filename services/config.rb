@@ -70,212 +70,45 @@ coreo_aws_rule_runner_rds "advise-rds" do
   regions ${AUDIT_AWS_RDS_REGIONS}
 end
 
-coreo_uni_util_jsrunner "rds-aggregate" do
-  action :run
-  json_input '{"composite name":"PLAN::stack_name",
-  "plan name":"PLAN::name",
-  "number_of_checks":"COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_checks",
-  "number_of_violations":"COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_violations",
-  "number_violations_ignored":"COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_ignored_violations",
-  "violations":COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report}'
-  function <<-EOH
-
-var_regions = "${AUDIT_AWS_RDS_REGIONS}";
-
-var result = {};
-result['composite name'] = json_input['composite name'];
-result['plan name'] = json_input['plan name'];
-result['number_of_checks'] = json_input['number_of_checks'];
-result['number_of_violations'] = json_input['number_of_violations'];
-result['number_violations_ignored'] = json_input['number_violations_ignored'];
-result['regions'] = var_regions;
-result['violations'] = json_input['violations'];
-
-callback(result);
-  EOH
-end
-
-coreo_uni_util_jsrunner "jsrunner-process-suppression-rds" do
-  action :run
-  provide_composite_access true
-  json_input 'COMPOSITE::coreo_uni_util_jsrunner.rds-aggregate.return'
-  packages([
-               {
-                   :name => "js-yaml",
-                   :version => "3.7.0"
-               }       ])
-  function <<-EOH
-  const fs = require('fs');
-  const yaml = require('js-yaml');
-  let suppression;
-  try {
-      suppression = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
-  } catch (e) {
-  }
-  coreoExport('suppression', JSON.stringify(suppression));
-  function createViolationWithSuppression(result) {
-      const regionKeys = Object.keys(violations);
-      regionKeys.forEach(regionKey => {
-          result[regionKey] = {};
-          const objectIdKeys = Object.keys(violations[regionKey]);
-          objectIdKeys.forEach(objectIdKey => {
-              createObjectId(regionKey, objectIdKey);
-          });
-      });
-  }
-  
-  function createObjectId(regionKey, objectIdKey) {
-      const wayToResultObjectId = result[regionKey][objectIdKey] = {};
-      const wayToViolationObjectId = violations[regionKey][objectIdKey];
-      wayToResultObjectId.tags = wayToViolationObjectId.tags;
-      wayToResultObjectId.violations = {};
-      createSuppression(wayToViolationObjectId, regionKey, objectIdKey);
-  }
-  
-  
-  function createSuppression(wayToViolationObjectId, regionKey, violationObjectIdKey) {
-      const ruleKeys = Object.keys(wayToViolationObjectId['violations']);
-      ruleKeys.forEach(violationRuleKey => {
-          result[regionKey][violationObjectIdKey].violations[violationRuleKey] = wayToViolationObjectId['violations'][violationRuleKey];
-          Object.keys(suppression).forEach(suppressRuleKey => {
-              suppression[suppressRuleKey].forEach(suppressionObject => {
-                  Object.keys(suppressionObject).forEach(suppressObjectIdKey => {
-                      setDateForSuppression(
-                          suppressionObject, suppressObjectIdKey,
-                          violationRuleKey, suppressRuleKey,
-                          violationObjectIdKey, regionKey
-                      );
-                  });
-              });
-          });
-      });
-  }
-  
-  
-  function setDateForSuppression(
-      suppressionObject, suppressObjectIdKey,
-      violationRuleKey, suppressRuleKey,
-      violationObjectIdKey, regionKey
-  ) {
-      file_date = null;
-      let suppressDate = suppressionObject[suppressObjectIdKey];
-      const areViolationsEqual = violationRuleKey === suppressRuleKey && violationObjectIdKey === suppressObjectIdKey;
-      if (areViolationsEqual) {
-          const nowDate = new Date();
-          const correctDateSuppress = getCorrectSuppressDate(suppressDate);
-          const isSuppressionDate = nowDate <= correctDateSuppress;
-          if (isSuppressionDate) {
-              setSuppressionProp(regionKey, violationObjectIdKey, violationRuleKey, file_date);
-          } else {
-              setSuppressionExpired(regionKey, violationObjectIdKey, violationRuleKey, file_date);
-          }
-      }
-  }
-  
-  
-  function getCorrectSuppressDate(suppressDate) {
-      const hasSuppressionDate = suppressDate !== '';
-      if (hasSuppressionDate) {
-          file_date = suppressDate;
-      } else {
-          suppressDate = new Date();
-      }
-      let correctDateSuppress = new Date(suppressDate);
-      if (isNaN(correctDateSuppress.getTime())) {
-          correctDateSuppress = new Date(0);
-      }
-      return correctDateSuppress;
-  }
-  
-  
-  function setSuppressionProp(regionKey, objectIdKey, violationRuleKey, file_date) {
-      const wayToViolationObject = result[regionKey][objectIdKey].violations[violationRuleKey];
-      wayToViolationObject["suppressed"] = true;
-      if (file_date != null) {
-          wayToViolationObject["suppression_until"] = file_date;
-          wayToViolationObject["suppression_expired"] = false;
-      }
-  }
-  
-  function setSuppressionExpired(regionKey, objectIdKey, violationRuleKey, file_date) {
-      if (file_date !== null) {
-          result[regionKey][objectIdKey].violations[violationRuleKey]["suppression_until"] = file_date;
-          result[regionKey][objectIdKey].violations[violationRuleKey]["suppression_expired"] = true;
-      } else {
-          result[regionKey][objectIdKey].violations[violationRuleKey]["suppression_expired"] = false;
-      }
-      result[regionKey][objectIdKey].violations[violationRuleKey]["suppressed"] = false;
-  }
-  
-  const violations = json_input['violations'];
-  const result = {};
-  createViolationWithSuppression(result, json_input);
-  callback(result);
-EOH
-end
-
-coreo_uni_util_variables "rds-for-suppression-update-advisor-output" do
-  action :set
-  variables([
-                {'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report' => 'COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-rds.return'}
-            ])
-end
-
-coreo_uni_util_jsrunner "jsrunner-process-table-rds" do
-  action :run
-  provide_composite_access true
-  json_input 'COMPOSITE::coreo_uni_util_jsrunner.rds-aggregate.return'
-  packages([
-               {
-                   :name => "js-yaml",
-                   :version => "3.7.0"
-               }       ])
-  function <<-EOH
-    var fs = require('fs');
-    var yaml = require('js-yaml');
-    try {
-        var table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
-    } catch (e) {
-    }
-    coreoExport('table', JSON.stringify(table));
-    callback(table);
-  EOH
-end
-
-coreo_uni_util_jsrunner "jsrunner-process-alert-list-rds" do
-  action :run
-  provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report}'
-  packages([
-               {
-                   :name => "js-yaml",
-                   :version => "3.7.0"
-               }       ])
-  function <<-EOH
-    let alertListToJSON = "${AUDIT_AWS_RDS_ALERT_LIST}";
-    let alertListArray = alertListToJSON.replace(/'/g, '"');
-    callback(alertListArray);
-  EOH
-end
-
 coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   action :run
   data_type "json"
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.7.8"
+                   :version => "1.8.2"
                }
                   ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
-                "alert list": COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-alert-list-rds.return,
-                "table": COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-table-rds.return,
-                "violations": COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-rds.return}'
+                "violations": COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report}'
   function <<-EOH
 
 
 
+function setTableAndSuppression() {
+  let table;
+  let suppression;
+
+  const fs = require('fs');
+  const yaml = require('js-yaml');
+  try {
+      table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
+      suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
+  } catch (e) {
+  }
+  coreoExport('table', JSON.stringify(table));
+  coreoExport('suppression', JSON.stringify(table));
+  
+  let alertListToJSON = "${AUDIT_AWS_RDS_ALERT_LIST}";
+  let alertListArray = alertListToJSON.replace(/'/g, '"');
+  json_input['alert list'] = alertListArray || [];
+  json_input['suppression'] = suppression || [];
+  json_input['table'] = table || {};
+}
+
+
+setTableAndSuppression();
 
 const JSON_INPUT = json_input;
 const NO_OWNER_EMAIL = "${AUDIT_AWS_RDS_ALERT_RECIPIENT}";
@@ -299,23 +132,29 @@ coreo_uni_util_jsrunner "tags-rollup-rds" do
   data_type "text"
   json_input 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.return'
   function <<-EOH
-var rollup_string = "";
-let rollup = '';
-let emailText = '';
-let numberOfViolations = 0;
-for (var entry=0; entry < json_input.length; entry++) {
-    if (json_input[entry]['endpoint']['to'].length) {
-        numberOfViolations += parseInt(json_input[entry]['num_violations']);
-        emailText += "recipient: " + json_input[entry]['endpoint']['to'] + " - " + "Violations: " + json_input[entry]['num_violations'] + "\\n";
-    }
+const notifiers = json_input;
+
+function setTextRollup() {
+    let emailText = '';
+    let numberOfViolations = 0;
+    notifiers.forEach(notifier => {
+        const hasEmail = notifier['endpoint']['to'].length;
+        if(hasEmail) {
+            numberOfViolations += parseInt(notifier['num_violations']);
+            emailText += "recipient: " + notifier['endpoint']['to'] + " - " + "Violations: " + notifier['num_violations'] + "\\n";
+        }
+    });
+
+    textRollup += 'Number of Violating Cloud Objects: ' + numberOfViolations + "\\n";
+    textRollup += 'Rollup' + "\\n";
+    textRollup += emailText;
 }
 
-rollup += 'number of Violations: ' + numberOfViolations + "\\n";
-rollup += 'Rollup' + "\\n";
-rollup += emailText;
 
-rollup_string = rollup;
-callback(rollup_string);
+let textRollup = '';
+setTextRollup();
+
+callback(textRollup);
   EOH
 end
 
