@@ -109,7 +109,7 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-rds" do
   const yaml = require('js-yaml');
   let suppression;
   try {
-      suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
+      suppression = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
   } catch (e) {
   }
   coreoExport('suppression', JSON.stringify(suppression));
