@@ -77,6 +77,10 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
                {
                    :name => "cloudcoreo-jsrunner-commons",
                    :version => "1.8.2"
+               },
+               {
+                   :name => "js-yaml",
+                   :version => "3.7.0"
                }
                   ])
   json_input '{ "composite name":"PLAN::stack_name",
