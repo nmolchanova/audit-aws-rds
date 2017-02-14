@@ -31,14 +31,6 @@ This repo is designed to work with CloudCoreo. It will monitor RDS against best 
   * description: List of AWS regions to check. Default is us-east-1,us-east-2,us-west-1,us-west-2,eu-west-1.
   * default: us-east-1, us-east-2, us-west-1, us-west-2, eu-west-1
 
-### `AUDIT_AWS_RDS_ROLLUP_REPORT`:
-  * description: Would you like to send a rollup RDS report? This is a short email that summarizes the number of checks performed and the number of violations found. Options - notify / nothing. Default is nothing.
-  * default: nothing
-
-### `AUDIT_AWS_RDS_HTML_REPORT`:
-  * description: Would you like to send a full RDS report? This is an email that details any violations found and includes a list of the violating cloud objects. Options - notify / nothing. Default is nothing.
-  * default: nothing
-
 
 ## Optional variables with default
 
