@@ -320,12 +320,12 @@ callback(rollup_string);
 end
 
 coreo_uni_util_notify "advise-rds-to-tag-values" do
-  action :${AUDIT_AWS_RDS_HTML_REPORT}
+  action((("${AUDIT_AWS_RDS_ALERT_RECIPIENT}".length > 0)) ? :notify : :nothing)
   notifiers 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.return'
 end
 
 coreo_uni_util_notify "advise-rds-rollup" do
-  action :${AUDIT_AWS_RDS_ROLLUP_REPORT}
+  action((("${AUDIT_AWS_RDS_ALERT_RECIPIENT}".length > 0) and (! "${AUDIT_AWS_RDS_OWNER_TAG}".eql?("NOT_A_TAG"))) ? :notify : :nothing)
   type 'email'
   allow_empty ${AUDIT_AWS_RDS_ALLOW_EMPTY}
   send_on '${AUDIT_AWS_RDS_SEND_ON}'
