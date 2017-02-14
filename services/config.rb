@@ -64,11 +64,32 @@ coreo_aws_rule "rds-db-publicly-accessible" do
   id_map "object.db_instances.db_instance_identifier"
 end
 
+
+coreo_uni_util_variables "planwide" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_uni_util_variables.planwide.composite_name' => 'PLAN::stack_name'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.plan_name' => 'PLAN::name'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'unset'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'unset'}
+            ])
+end
+
 coreo_aws_rule_runner_rds "advise-rds" do
   rules ${AUDIT_AWS_RDS_ALERT_LIST}
   action :run
   regions ${AUDIT_AWS_RDS_REGIONS}
 end
+
+coreo_uni_util_variables "update-planwide-1" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_violations'},
+
+            ])
+end
+
 
 coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   action :run
@@ -97,12 +118,19 @@ function setTableAndSuppression() {
   const fs = require('fs');
   const yaml = require('js-yaml');
   try {
-      table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
       suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
   } catch (e) {
+      console.log(`Error reading suppression.yaml file: ${e}`);
+      suppression = {};
+  }
+  try {
+      table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
+  } catch (e) {
+      console.log(`Error reading table.yaml file: ${e}`);
+      table = {};
   }
   coreoExport('table', JSON.stringify(table));
-  coreoExport('suppression', JSON.stringify(table));
+  coreoExport('suppression', JSON.stringify(suppression));
   
   let alertListToJSON = "${AUDIT_AWS_RDS_ALERT_LIST}";
   let alertListArray = alertListToJSON.replace(/'/g, '"');
@@ -127,9 +155,23 @@ const VARIABLES = { NO_OWNER_EMAIL, OWNER_TAG,
 const CloudCoreoJSRunner = require('cloudcoreo-jsrunner-commons');
 const AuditRDS = new CloudCoreoJSRunner(JSON_INPUT, VARIABLES);
 const notifiers = AuditRDS.getNotifiers();
+
+const JSONReportAfterGeneratingSuppression = AuditRDS.getJSONForAuditPanel();
+coreoExport('JSONReport', JSON.stringify(JSONReportAfterGeneratingSuppression));
+
 callback(notifiers);
   EOH
 end
+
+
+coreo_uni_util_variables "update-planwide-3" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.JSONReport'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.table' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.table'}
+            ])
+end
+
 
 coreo_uni_util_jsrunner "tags-rollup-rds" do
   action :run
@@ -163,12 +205,12 @@ callback(textRollup);
 end
 
 coreo_uni_util_notify "advise-rds-to-tag-values" do
-  action :${AUDIT_AWS_RDS_HTML_REPORT}
+  action((("${AUDIT_AWS_RDS_ALERT_RECIPIENT}".length > 0)) ? :notify : :nothing)
   notifiers 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.return'
 end
 
 coreo_uni_util_notify "advise-rds-rollup" do
-  action :${AUDIT_AWS_RDS_ROLLUP_REPORT}
+  action((("${AUDIT_AWS_RDS_ALERT_RECIPIENT}".length > 0) and (! "${AUDIT_AWS_RDS_OWNER_TAG}".eql?("NOT_A_TAG"))) ? :notify : :nothing)
   type 'email'
   allow_empty ${AUDIT_AWS_RDS_ALLOW_EMPTY}
   send_on '${AUDIT_AWS_RDS_SEND_ON}'

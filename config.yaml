@@ -33,16 +33,6 @@ variables:
         - us-west-1
         - us-west-2
         - eu-west-1
-  AUDIT_AWS_RDS_ROLLUP_REPORT:
-      description: "Would you like to send a rollup RDS report? This is a short email that summarizes the number of checks performed and the number of violations found. Options - notify / nothing. Default is nothing."
-      required: true
-      type: string
-      default: "nothing"
-  AUDIT_AWS_RDS_HTML_REPORT:
-      description: "Would you like to send a full RDS report? This is an email that details any violations found and includes a list of the violating cloud objects. Options - notify / nothing. Default is nothing."
-      required: true
-      type: string
-      default: "nothing"
   AUDIT_AWS_RDS_OWNER_TAG:
       description: "Enter an AWS tag whose value is an email address of owner of the RDS object. (Optional)"
       required: false
