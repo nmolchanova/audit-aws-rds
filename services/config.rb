@@ -94,6 +94,7 @@ end
 coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   action :run
   data_type "json"
+  provide_composite_access true
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
