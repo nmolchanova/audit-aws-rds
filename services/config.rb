@@ -121,13 +121,13 @@ function setTableAndSuppression() {
   try {
       suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
   } catch (e) {
-      console.log(`Error reading suppression.yaml file: ${e}`);
+      console.log("Error reading suppression.yaml file: " , e);
       suppression = {};
   }
   try {
       table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
   } catch (e) {
-      console.log(`Error reading table.yaml file: ${e}`);
+      console.log("Error reading table.yaml file: ", e);
       table = {};
   }
   coreoExport('table', JSON.stringify(table));
