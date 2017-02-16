@@ -65,13 +65,13 @@ coreo_aws_rule "rds-db-publicly-accessible" do
 end
 
 
-coreo_uni_util_variables "planwide" do
+coreo_uni_util_variables "rds-planwide" do
   action :set
   variables([
-                {'COMPOSITE::coreo_uni_util_variables.planwide.composite_name' => 'PLAN::stack_name'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.plan_name' => 'PLAN::name'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'unset'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'unset'}
+                {'COMPOSITE::coreo_uni_util_variables.rds-rds-planwide.composite_name' => 'PLAN::stack_name'},
+                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.plan_name' => 'PLAN::name'},
+                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.results' => 'unset'},
+                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.number_violations' => 'unset'}
             ])
 end
 
@@ -81,11 +81,11 @@ coreo_aws_rule_runner_rds "advise-rds" do
   regions ${AUDIT_AWS_RDS_REGIONS}
 end
 
-coreo_uni_util_variables "update-planwide-1" do
+coreo_uni_util_variables "rds-update-planwide-1" do
   action :set
   variables([
-                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_violations'},
+                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.results' => 'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report'},
+                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.number_violations' => 'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_violations'},
 
             ])
 end
@@ -165,11 +165,11 @@ callback(notifiers);
 end
 
 
-coreo_uni_util_variables "update-planwide-3" do
+coreo_uni_util_variables "rds-update-planwide-3" do
   action :set
   variables([
-                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.JSONReport'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.table' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.table'}
+                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.JSONReport'},
+                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.table' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.table'}
             ])
 end
 
