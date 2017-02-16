@@ -28,15 +28,15 @@ This repo is designed to work with CloudCoreo. It will monitor RDS against best 
   * default: change
 
 ### `AUDIT_AWS_RDS_REGIONS`:
-  * description: List of AWS regions to check. Default is us-east-1,us-east-2,us-west-1,us-west-2,eu-west-1.
-  * default: us-east-1, us-east-2, us-west-1, us-west-2, eu-west-1
+  * description: List of AWS regions to check. Default is all regions. Choices are us-east-1,us-east-2,us-west-1,us-west-2,ca-central-1,ap-south-1,ap-northeast-2,ap-southeast-1,ap-southeast-2,ap-northeast-1,eu-central-1,eu-west-1,eu-west-1,sa-east-1
+  * default: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, ap-south-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, eu-central-1, eu-west-1, eu-west-2, sa-east-1
 
 
 ## Optional variables with default
 
 ### `AUDIT_AWS_RDS_ALERT_LIST`:
-  * description: Which alerts would you like to check for? Default is all RDS alerts.
-  * default: rds-short-backup-retention-period, rds-no-auto-minor-version-upgrade, rds-db-publicly-accessible, rds-inventory
+  * description: Which alerts would you like to check for? Default is all RDS alerts. Choices are rds-short-backup-retention-period,rds-no-auto-minor-version-upgrade,rds-db-publicly-accessible,rds-inventory
+  * default: rds-short-backup-retention-period, rds-no-auto-minor-version-upgrade, rds-db-publicly-accessible
 
 ### `AUDIT_AWS_RDS_OWNER_TAG`:
   * description: Enter an AWS tag whose value is an email address of owner of the RDS object. (Optional)
