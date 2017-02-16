@@ -98,7 +98,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.8.2"
+                   :version => "1.8.3"
                },
                {
                    :name => "js-yaml",
@@ -164,6 +164,8 @@ callback(notifiers);
   EOH
 end
 
+# in the context of audit-aws, the jsrunner above is action :nothing, so these composite vars don't resolve
+# commenting out until addressed
 
 coreo_uni_util_variables "rds-update-planwide-3" do
   action :set
@@ -172,7 +174,6 @@ coreo_uni_util_variables "rds-update-planwide-3" do
                 {'COMPOSITE::coreo_uni_util_variables.rds-planwide.table' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.table'}
             ])
 end
-
 
 coreo_uni_util_jsrunner "tags-rollup-rds" do
   action :run
