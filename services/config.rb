@@ -98,7 +98,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.8.3"
+                   :version => "*"
                },
                {
                    :name => "js-yaml",
@@ -107,6 +107,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
                   ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
+                "cloud account name": "PLAN::cloud_account_name",
                 "violations": COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report}'
   function <<-EOH
 
@@ -150,17 +151,18 @@ const ALLOW_EMPTY = "${AUDIT_AWS_RDS_ALLOW_EMPTY}";
 const SEND_ON = "${AUDIT_AWS_RDS_SEND_ON}";
 const SHOWN_NOT_SORTED_VIOLATIONS_COUNTER = false;
 
-const VARIABLES = { NO_OWNER_EMAIL, OWNER_TAG, 
+const SETTINGS = { NO_OWNER_EMAIL, OWNER_TAG, 
     ALLOW_EMPTY, SEND_ON, SHOWN_NOT_SORTED_VIOLATIONS_COUNTER};
 
 const CloudCoreoJSRunner = require('cloudcoreo-jsrunner-commons');
-const AuditRDS = new CloudCoreoJSRunner(JSON_INPUT, VARIABLES);
-const notifiers = AuditRDS.getNotifiers();
+const AuditRDS = new CloudCoreoJSRunner(JSON_INPUT, SETTINGS);
+const letters = AuditRDS.getLetters();
 
-const JSONReportAfterGeneratingSuppression = AuditRDS.getJSONForAuditPanel();
-coreoExport('JSONReport', JSON.stringify(JSONReportAfterGeneratingSuppression));
+const newJSONInput = AuditRDS.getSortedJSONForAuditPanel();
+coreoExport('JSONReport', JSON.stringify(newJSONInput));
+coreoExport('report', JSON.stringify(newJSONInput['violations']));
 
-callback(notifiers);
+callback(letters);
   EOH
 end
 
@@ -170,6 +172,7 @@ end
 coreo_uni_util_variables "rds-update-planwide-3" do
   action :set
   variables([
+                {'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.report'},
                 {'COMPOSITE::coreo_uni_util_variables.rds-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.JSONReport'},
                 {'COMPOSITE::coreo_uni_util_variables.rds-planwide.table' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.table'}
             ])
