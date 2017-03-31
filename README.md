@@ -35,8 +35,8 @@ This repo is designed to work with CloudCoreo. It will monitor RDS against best 
 ## Optional variables with default
 
 ### `AUDIT_AWS_RDS_ALERT_LIST`:
-  * description: Which alerts would you like to check for? Default is all RDS alerts. Choices are rds-short-backup-retention-period,rds-no-auto-minor-version-upgrade,rds-db-publicly-accessible,rds-inventory
-  * default: rds-short-backup-retention-period, rds-no-auto-minor-version-upgrade, rds-db-publicly-accessible
+  * description: Which alerts would you like to check for? Default is all RDS alerts. Choices are rds-inventory, rds-short-backup-retention-period,rds-no-auto-minor-version-upgrade,rds-db-publicly-accessible,rds-inventory
+  * default: rds-inventory, rds-short-backup-retention-period, rds-no-auto-minor-version-upgrade, rds-db-publicly-accessible
 
 ### `AUDIT_AWS_RDS_OWNER_TAG`:
   * description: Enter an AWS tag whose value is an email address of owner of the RDS object. (Optional)
