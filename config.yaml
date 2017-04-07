@@ -1,9 +1,10 @@
 variables:
   AUDIT_AWS_RDS_ALERT_LIST:
-    description: "Which alerts would you like to check for? Default is all RDS alerts. Choices are rds-short-backup-retention-period,rds-no-auto-minor-version-upgrade,rds-db-publicly-accessible,rds-inventory"
+    description: "Which alerts would you like to check for? Default is all RDS alerts. Choices are rds-inventory, rds-short-backup-retention-period,rds-no-auto-minor-version-upgrade,rds-db-publicly-accessible,rds-inventory"
     required: false
     type: array
     default:
+      - rds-inventory
       - rds-short-backup-retention-period
       - rds-no-auto-minor-version-upgrade
       - rds-db-publicly-accessible
