@@ -24,7 +24,7 @@ coreo_aws_rule "rds-short-backup-retention-period" do
   description "The affected RDS database has a short backup retention period (less than 30 days)."
   category "Dataloss"
   suggested_action "Modify the backup retension period to increase it to greater than 30 days."
-  level "Warning"
+  level "Low"
   objectives ["db_instances"]
   audit_objects ["db_instances.backup_retention_period"]
   operators ["<"]
@@ -40,7 +40,7 @@ coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
   description "RDS is not set to automatically upgrade minor versions on your database instance."
   category "Reliability"
   suggested_action "Consider whether you would like AWS to automatically upgrade minor versions on your database instance. Modify your settings to allow minor version upgrades if possible."
-  level "Critical"
+  level "High"
   objectives ["db_instances"]
   audit_objects ["db_instances.auto_minor_version_upgrade"]
   operators ["=="]
@@ -56,7 +56,7 @@ coreo_aws_rule "rds-db-publicly-accessible" do
   description "The affected RDS database is publicly accessible to the world."
   category "Security"
   suggested_action "Consider whether the affected RDS database should be publicly accessible to the world. If not, modify the option which enables your RDS database to become publicly accessible."
-  level "Critical"
+  level "High"
   objectives ["db_instances"]
   audit_objects ["db_instances.publicly_accessible"]
   operators ["=="]
