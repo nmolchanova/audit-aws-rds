@@ -71,7 +71,7 @@ coreo_uni_util_variables "rds-planwide" do
                 {'COMPOSITE::coreo_uni_util_variables.rds-rds-planwide.composite_name' => 'PLAN::stack_name'},
                 {'COMPOSITE::coreo_uni_util_variables.rds-planwide.plan_name' => 'PLAN::name'},
                 {'COMPOSITE::coreo_uni_util_variables.rds-planwide.results' => 'unset'},
-                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.number_violations' => 'unset'}
+                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.number_violations' => '0'}
             ])
 end
 
@@ -98,7 +98,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.9.6-beta1"
+                   :version => "1.10.7-9"
                },
                {
                    :name => "js-yaml",
