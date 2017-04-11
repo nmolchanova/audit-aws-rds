@@ -2,7 +2,7 @@
 coreo_aws_rule "rds-inventory" do
   action :define
   service :rds
-  # link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
+  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
   include_violations_in_count false
   display_name "RDS Instance Inventory"
   description "This rule performs an inventory on all RDS DB instances in the target AWS account."
