@@ -55,7 +55,7 @@ This repo is designed to work with CloudCoreo. It will monitor RDS against best 
 1. RDS
 
 ## Categories
-1. Audit
+1. AWS Services Audi
 
 
 
