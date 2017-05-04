@@ -1,3 +1,3 @@
-audit RDS
+rds audit
 ============================
-This stack will monitor RDS and alert on things CloudCoreo developers think are violations of best practices
+This composite monitors rds and reports best practice violations, standards body policy violations, and inventory
