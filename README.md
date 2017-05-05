@@ -4,7 +4,7 @@ This composite monitors rds and reports best practice violations, standards body
 
 
 ## Description
-This composite monitors rds against best practices and reports violations and inventory.
+This composite monitors rds against best practices and reports violations and inventory
 
 
 ## Hierarchy
