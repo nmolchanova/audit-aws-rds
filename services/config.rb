@@ -25,6 +25,7 @@ coreo_aws_rule "rds-short-backup-retention-period" do
   category "Dataloss"
   suggested_action "Modify the backup retension period to increase it to greater than 30 days."
   level "Low"
+  meta_nist_171_id "3.8.9"
   objectives ["db_instances"]
   audit_objects ["db_instances.backup_retention_period"]
   operators ["<"]
