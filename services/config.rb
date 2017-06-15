@@ -81,6 +81,7 @@ coreo_aws_rule_runner_rds "advise-rds" do
   rules ${AUDIT_AWS_RDS_ALERT_LIST}
   action :run
   regions ${AUDIT_AWS_RDS_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
 coreo_uni_util_variables "rds-update-planwide-1" do
