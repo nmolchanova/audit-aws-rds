@@ -88,8 +88,8 @@ end
 coreo_uni_util_variables "rds-update-planwide-1" do
   action :set
   variables([
-                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.results' => 'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report'},
-                {'GLOBAL::number_violations' => 'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.number_violations'},
+                {'COMPOSITE::coreo_uni_util_variables.rds-planwide.results' => 'COMPOSITE::coreo_aws_rule_runner.advise-rds.report'},
+                {'GLOBAL::number_violations' => 'COMPOSITE::coreo_aws_rule_runner.advise-rds.number_violations'},
 
             ])
 end
@@ -112,7 +112,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   json_input '{"compositeName":"PLAN::stack_name",
                 "planName":"PLAN::name",
                 "cloudAccountName": "PLAN::cloud_account_name",
-                "violations": COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report}'
+                "violations": COMPOSITE::coreo_aws_rule_runner.advise-rds.report}'
   function <<-EOH
 
 const compositeName = json_input.compositeName;
@@ -192,7 +192,7 @@ end
 coreo_uni_util_variables "rds-update-planwide-3" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner_rds.advise-rds.report' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.report'},
+                {'COMPOSITE::coreo_aws_rule_runner.advise-rds.report' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.report'},
                 {'COMPOSITE::coreo_uni_util_variables.rds-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.JSONReport'},
                 {'GLOBAL::table' => 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.table'}
             ])
