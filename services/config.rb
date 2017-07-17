@@ -102,7 +102,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.10.7-19"
+                   :version => "1.10.7-beta51"
                },
                {
                    :name => "js-yaml",
@@ -124,6 +124,7 @@ const NO_OWNER_EMAIL = "${AUDIT_AWS_RDS_ALERT_RECIPIENT}";
 const OWNER_TAG = "${AUDIT_AWS_RDS_OWNER_TAG}";
 const ALLOW_EMPTY = "${AUDIT_AWS_RDS_ALLOW_EMPTY}";
 const SEND_ON = "${AUDIT_AWS_RDS_SEND_ON}";
+const htmlReportSubject = "${HTML_REPORT_SUBJECT}";
 
 const alertListArray = ${AUDIT_AWS_RDS_ALERT_LIST};
 const ruleInputs = {};
@@ -149,13 +150,14 @@ setTable();
 const argForConfig = {
     NO_OWNER_EMAIL, cloudObjects, userSuppression, OWNER_TAG,
     userSchemes, alertListArray, ruleInputs, ALLOW_EMPTY,
-    SEND_ON, cloudAccount, compositeName, planName
+    SEND_ON, cloudAccount, compositeName, planName, htmlReportSubject
 }
 
 
 function createConfig(argForConfig) {
     let JSON_INPUT = {
         compositeName: argForConfig.compositeName,
+        htmlReportSubject: argForConfig.htmlReportSubject,
         planName: argForConfig.planName,
         violations: argForConfig.cloudObjects,
         userSchemes: argForConfig.userSchemes,
