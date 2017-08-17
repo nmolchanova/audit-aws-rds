@@ -26,7 +26,7 @@ coreo_aws_rule "rds-short-backup-retention-period" do
   level "Low"
   meta_nist_171_id "3.8.9"
   objectives ["db_instances"]
-  audit_objects ["db_instances.backup_retention_period"]
+  audit_objects ["object.db_instances.backup_retention_period"]
   operators ["<"]
   raise_when [30]
   id_map "object.db_instances.db_instance_identifier"
@@ -42,7 +42,7 @@ coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
   suggested_action "Consider whether you would like AWS to automatically upgrade minor versions on your database instance. Modify your settings to allow minor version upgrades if possible."
   level "High"
   objectives ["db_instances"]
-  audit_objects ["db_instances.auto_minor_version_upgrade"]
+  audit_objects ["object.db_instances.auto_minor_version_upgrade"]
   operators ["=="]
   raise_when [false]
   id_map "object.db_instances.db_instance_identifier"
@@ -59,7 +59,7 @@ coreo_aws_rule "rds-db-publicly-accessible" do
   level "High"
   meta_nist_171_id "3.13.2"
   objectives ["db_instances"]
-  audit_objects ["db_instances.publicly_accessible"]
+  audit_objects ["object.db_instances.publicly_accessible"]
   operators ["=="]
   raise_when [true]
   id_map "object.db_instances.db_instance_identifier"
