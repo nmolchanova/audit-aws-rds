@@ -58,7 +58,7 @@ coreo_aws_rule "rds-db-publicly-accessible" do
   category "Security"
   suggested_action "Consider whether the affected RDS database should be publicly accessible to the world. If not, modify the option which enables your RDS database to become publicly accessible."
   level "High"
-  meta_nist_171_id "3.13.2"
+  meta_nist_171_id "3.1.22, 3.13.2"
   objectives ["db_instances"]
   audit_objects ["db_instances.publicly_accessible"]
   operators ["=="]
