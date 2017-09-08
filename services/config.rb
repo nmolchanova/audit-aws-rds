@@ -1,4 +1,3 @@
-
 coreo_aws_rule "rds-inventory" do
   action :define
   service :rds
@@ -27,7 +26,7 @@ coreo_aws_rule "rds-short-backup-retention-period" do
   level "Low"
   meta_nist_171_id "3.8.9"
   objectives ["db_instances"]
-  audit_objects ["db_instances.backup_retention_period"]
+  audit_objects ["object.db_instances.backup_retention_period"]
   operators ["<"]
   raise_when [30]
   id_map "object.db_instances.db_instance_identifier"
@@ -43,7 +42,7 @@ coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
   suggested_action "Consider whether you would like AWS to automatically upgrade minor versions on your database instance. Modify your settings to allow minor version upgrades if possible."
   level "High"
   objectives ["db_instances"]
-  audit_objects ["db_instances.auto_minor_version_upgrade"]
+  audit_objects ["object.db_instances.auto_minor_version_upgrade"]
   operators ["=="]
   raise_when [false]
   id_map "object.db_instances.db_instance_identifier"
@@ -60,7 +59,7 @@ coreo_aws_rule "rds-db-publicly-accessible" do
   level "High"
   meta_nist_171_id "3.1.22, 3.13.2"
   objectives ["db_instances"]
-  audit_objects ["db_instances.publicly_accessible"]
+  audit_objects ["object.db_instances.publicly_accessible"]
   operators ["=="]
   raise_when [true]
   id_map "object.db_instances.db_instance_identifier"
@@ -102,7 +101,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.10.7-beta63"
+                   :version => "1.10.7-beta64"
                },
                {
                    :name => "js-yaml",
@@ -280,5 +279,46 @@ COMPOSITE::coreo_uni_util_jsrunner.tags-rollup-rds.return
   payload_type 'text'
   endpoint ({
       :to => '${AUDIT_AWS_RDS_ALERT_RECIPIENT}', :subject => 'CloudCoreo rds rule results on PLAN::stack_name :: PLAN::name'
+  })
+end
+
+coreo_aws_s3_policy "cloudcoreo-audit-aws-rds-policy" do
+  action((("${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}".length > 0) ) ? :create : :nothing)
+  policy_document <<-EOF
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "",
+"Effect": "Allow",
+"Principal":
+{ "AWS": "*" }
+,
+"Action": "s3:*",
+"Resource": [
+"arn:aws:s3:::${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}/*",
+"arn:aws:s3:::${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}"
+]
+}
+]
+}
+  EOF
+end
+
+coreo_aws_s3_bucket "bucket-${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}" do
+  action((("${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}".length > 0) ) ? :create : :nothing)
+  bucket_policies ["cloudcoreo-audit-aws-rds-policy"]
+end
+
+coreo_uni_util_notify "cloudcoreo-audit-aws-rds-s3" do
+  action((("${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}".length > 0) ) ? :notify : :nothing)
+  type 's3'
+  allow_empty true
+  payload 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.report'
+  endpoint ({
+      object_name: 'aws-rds-json',
+      bucket_name: '${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}',
+      folder: 'rds/PLAN::name',
+      properties: {}
   })
 end
