@@ -48,6 +48,23 @@ coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
   id_map "object.db_instances.db_instance_identifier"
 end
 
+coreo_aws_rule "rds-db-snapshot-unencrypted" do
+  action :define
+  service :rds
+  link "http://kb.cloudcoreo.com/mydoc_rds-db-snapshot-unencrypted.html"
+  display_name "RDS snapshots are not encrypted"
+  description "The affected RDS snaphsot is not encrypted."
+  category "Security"
+  suggested_action "Consider whether the affected RDS snapshot should be encrypted. If not, modify the option which encrypts your RDS snapshot"
+  level "High"
+  meta_nist_171_id "3.13.2"
+  objectives ["db_snapshots"]
+  audit_objects ["object.db_snapshots.encrypted"]
+  operators ["=="]
+  raise_when [false]
+  id_map "object.db_snapshots.db_snapshot_identifier"
+end
+
 coreo_aws_rule "rds-db-publicly-accessible" do
   action :define
   service :rds
