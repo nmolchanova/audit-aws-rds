@@ -317,7 +317,7 @@ coreo_uni_util_notify "cloudcoreo-audit-aws-rds-s3" do
   payload 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.report'
   endpoint ({
       object_name: 'aws-rds-json',
-      bucket_name: '${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}',
+      bucket_name: 'bucket-${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}',
       folder: 'rds/PLAN::name',
       properties: {}
   })
