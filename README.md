@@ -35,8 +35,8 @@ This composite monitors rds against best practices and reports violations and in
 ## Optional variables with default
 
 ### `AUDIT_AWS_RDS_ALERT_LIST`:
-  * description: Which rules would you like to run? Possible values are rds-inventory rds-short-backup-retention-period rds-no-auto-minor-version-upgrade rds-db-publicly-accessible
-  * default: rds-short-backup-retention-period, rds-no-auto-minor-version-upgrade, rds-db-publicly-accessible
+  * description: Which rules would you like to run? Possible values are rds-db-snapshot-unencrypted rds-inventory rds-short-backup-retention-period rds-no-auto-minor-version-upgrade rds-db-publicly-accessible
+  * default: rds-db-snapshot-unencrypted, rds-short-backup-retention-period, rds-no-auto-minor-version-upgrade, rds-db-publicly-accessible
 
 ### `AUDIT_AWS_RDS_OWNER_TAG`:
   * description: Enter an AWS tag whose value is an email address of owner of the RDS object. (Optional)
