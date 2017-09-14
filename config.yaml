@@ -8,6 +8,7 @@ variables:
     required: false
     type: array
     default:
+        - rds-db-instance-unencrypted #
         - rds-db-snapshot-unencrypted #
         - rds-short-backup-retention-period #
         - rds-no-auto-minor-version-upgrade #
