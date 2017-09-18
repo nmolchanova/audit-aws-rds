@@ -6,6 +6,7 @@ variables:
             - rds-inventory # not_violation 
             - rds-short-backup-retention-period # 
             - rds-no-auto-minor-version-upgrade # 
+            - rds-db-instance-unencrypted # 
             - rds-db-snapshot-unencrypted # 
             - rds-db-publicly-accessible # 
-        description: "Which rules would you like to run? Possible values are rds-inventory rds-short-backup-retention-period rds-no-auto-minor-version-upgrade rds-db-snapshot-unencrypted rds-db-publicly-accessible"
+        description: "Which rules would you like to run? Possible values are rds-inventory rds-short-backup-retention-period rds-no-auto-minor-version-upgrade rds-db-instance-unencrypted rds-db-snapshot-unencrypted rds-db-publicly-accessible"
