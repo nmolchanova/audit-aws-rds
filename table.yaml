@@ -26,3 +26,6 @@ rds-inventory:
   "Engine Version": "+__OBJECT__.violations.__RULE__.result_info.0.object.engine_version+"
   "Instance Type": "+__OBJECT__.violations.__RULE__.result_info.0.object.db_instance_class+"
   "AWS Tags": "__TAGS__"
+default:
+  "Object ID": "__OBJECT__"
+  "Region": "+__OBJECT__.violations.__RULE__.region+"
