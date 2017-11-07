@@ -11,6 +11,14 @@ rds-db-publicly-accessible:
   "RDS Instance": "__OBJECT__~https://console.aws.amazon.com/rds/home?region=+__OBJECT__.violations.__RULE__.region+#dbinstances:id=__OBJECT__;sf=all"
   "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
   "AWS Tags": "__TAGS__"
+rds-db-snapshot-unencrypted:
+  "RDS Instance": "__OBJECT__~https://console.aws.amazon.com/rds/home?region=+__OBJECT__.violations.__RULE__.region+#db-snapshots:id=__OBJECT__;sf=all"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+rds-db-instance-unencrypted:
+  "RDS Instance": "__OBJECT__~https://console.aws.amazon.com/rds/home?region=+__OBJECT__.violations.__RULE__.region+#dbinstances:id=__OBJECT__;sf=all"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
 rds-inventory:
   "RDS Instance": "__OBJECT__~https://console.aws.amazon.com/rds/home?region=+__OBJECT__.violations.__RULE__.region+#dbinstances:id=__OBJECT__;sf=all"
   "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
@@ -18,3 +26,6 @@ rds-inventory:
   "Engine Version": "+__OBJECT__.violations.__RULE__.result_info.0.object.engine_version+"
   "Instance Type": "+__OBJECT__.violations.__RULE__.result_info.0.object.db_instance_class+"
   "AWS Tags": "__TAGS__"
+default:
+  "Object ID": "__OBJECT__"
+  "Region": "+__OBJECT__.violations.__RULE__.region+"

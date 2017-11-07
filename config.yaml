@@ -8,10 +8,12 @@ variables:
     required: false
     type: array
     default:
+        - rds-db-instance-unencrypted #
+        - rds-db-snapshot-unencrypted #
         - rds-short-backup-retention-period #
         - rds-no-auto-minor-version-upgrade #
         - rds-db-publicly-accessible #
-    description: "Which rules would you like to run? Possible values are rds-inventory rds-short-backup-retention-period rds-no-auto-minor-version-upgrade rds-db-publicly-accessible"
+    description: "Which rules would you like to run? Possible values are rds-db-instance-unencrypted rds-db-snapshot-unencrypted rds-inventory rds-short-backup-retention-period rds-no-auto-minor-version-upgrade rds-db-publicly-accessible"
   AUDIT_AWS_RDS_ALERT_RECIPIENT:
     description: "Enter the email address(es) that will receive notifiers. If more than one, separate each with a comma."
     required: false
@@ -61,3 +63,5 @@ variables:
       type: string
       default:
       description: "Enter S3 bucket name to upload reports. (Optional)"
+      validations:
+        - s3-bucket-name-validation

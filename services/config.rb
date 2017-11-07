@@ -48,6 +48,40 @@ coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
   id_map "object.db_instances.db_instance_identifier"
 end
 
+coreo_aws_rule "rds-db-instance-unencrypted" do
+  action :define
+  service :rds
+  link "http://kb.cloudcoreo.com/mydoc_rds-db-snapshot-unencrypted.html"
+  display_name "RDS DB instances are not encrypted"
+  description "The affected RDS DB instance is not encrypted."
+  category "Security"
+  suggested_action "Consider whether the affected RDS DB instance should be encrypted. If not, modify the option which encrypts your RDS DB instance"
+  level "High"
+  meta_nist_171_id "3.13.2"
+  objectives ["db_instances"]
+  audit_objects ["object.db_instances.storage_encrypted"]
+  operators ["=="]
+  raise_when [false]
+  id_map "object.db_instances.db_instance_identifier"
+end
+
+coreo_aws_rule "rds-db-snapshot-unencrypted" do
+  action :define
+  service :rds
+  link "http://kb.cloudcoreo.com/mydoc_rds-db-snapshot-unencrypted.html"
+  display_name "RDS snapshots are not encrypted"
+  description "The affected RDS snaphsot is not encrypted."
+  category "Security"
+  suggested_action "Consider whether the affected RDS snapshot should be encrypted. If not, modify the option which encrypts your RDS snapshot"
+  level "High"
+  meta_nist_171_id "3.13.2"
+  objectives ["db_snapshots"]
+  audit_objects ["object.db_snapshots.encrypted"]
+  operators ["=="]
+  raise_when [false]
+  id_map "object.db_snapshots.db_snapshot_identifier"
+end
+
 coreo_aws_rule "rds-db-publicly-accessible" do
   action :define
   service :rds
@@ -101,7 +135,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array-rds" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.10.7-beta64"
+                   :version => "1.10.7-beta65"
                },
                {
                    :name => "js-yaml",
@@ -296,8 +330,8 @@ coreo_aws_s3_policy "cloudcoreo-audit-aws-rds-policy" do
 ,
 "Action": "s3:*",
 "Resource": [
-"arn:aws:s3:::${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}/*",
-"arn:aws:s3:::${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}"
+"arn:aws:s3:::bucket-${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}/*",
+"arn:aws:s3:::bucket-${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}"
 ]
 }
 ]
@@ -317,7 +351,7 @@ coreo_uni_util_notify "cloudcoreo-audit-aws-rds-s3" do
   payload 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array-rds.report'
   endpoint ({
       object_name: 'aws-rds-json',
-      bucket_name: '${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}',
+      bucket_name: 'bucket-${AUDIT_AWS_RDS_S3_NOTIFICATION_BUCKET_NAME}',
       folder: 'rds/PLAN::name',
       properties: {}
   })
