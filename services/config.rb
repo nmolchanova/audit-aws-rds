@@ -30,6 +30,8 @@ coreo_aws_rule "rds-short-backup-retention-period" do
   operators ["<"]
   raise_when [30]
   id_map "object.db_instances.db_instance_identifier"
+  meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND lt(encrypted, 30)) { db_instance_identifier } }"
+  meta_rule_node_triggers ['db_instance']
 end
 
 coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
@@ -46,6 +48,8 @@ coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
   operators ["=="]
   raise_when [false]
   id_map "object.db_instances.db_instance_identifier"
+  meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND eq(auto_minor_version_upgrade, \"false\")) { db_instance_identifier } }"
+  meta_rule_node_triggers ['db_instance']
 end
 
 coreo_aws_rule "rds-db-instance-unencrypted" do
@@ -63,6 +67,8 @@ coreo_aws_rule "rds-db-instance-unencrypted" do
   operators ["=="]
   raise_when [false]
   id_map "object.db_instances.db_instance_identifier"
+  meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND eq(encrypted, \"false\")) { db_instance_identifier } }"
+  meta_rule_node_triggers ['db_instance']
 end
 
 coreo_aws_rule "rds-db-snapshot-unencrypted" do
@@ -80,6 +86,8 @@ coreo_aws_rule "rds-db-snapshot-unencrypted" do
   operators ["=="]
   raise_when [false]
   id_map "object.db_snapshots.db_snapshot_identifier"
+  meta_rule_query "{ query(func: has(db_snapshot)) @filter(%<db_snapshot_filter>s AND eq(encrypted, \"false\")) { db_snapshot_identifier } }"
+  meta_rule_node_triggers ['db_snapshot']
 end
 
 coreo_aws_rule "rds-db-publicly-accessible" do
@@ -97,6 +105,8 @@ coreo_aws_rule "rds-db-publicly-accessible" do
   operators ["=="]
   raise_when [true]
   id_map "object.db_instances.db_instance_identifier"
+  meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND eq(publicly_accessible, \"true\")) { db_instance_identifier } }"
+  meta_rule_node_triggers ['db_instance']
 end
 
 
