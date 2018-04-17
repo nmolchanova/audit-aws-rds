@@ -30,7 +30,7 @@ coreo_aws_rule "rds-short-backup-retention-period" do
   operators ["<"]
   raise_when [30]
   id_map "object.db_instances.db_instance_identifier"
-  meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND lt(encrypted, 30)) { db_instance_identifier } }"
+  meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND lt(backup_retention_period, 30)) { db_instance_identifier } }"
   meta_rule_node_triggers ['db_instance']
 end
 
