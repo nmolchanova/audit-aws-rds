@@ -67,7 +67,7 @@ coreo_aws_rule "rds-db-instance-unencrypted" do
   operators ["=="]
   raise_when [false]
   id_map "object.db_instances.db_instance_identifier"
-  meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND eq(encrypted, \"false\")) { db_instance_identifier } }"
+  meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND eq(storage_encrypted, \"false\")) { db_instance_identifier } }"
   meta_rule_node_triggers ['db_instance']
 end
 
