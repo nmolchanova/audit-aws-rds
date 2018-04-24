@@ -31,7 +31,9 @@ coreo_aws_rule "rds-short-backup-retention-period" do
   raise_when [30]
   id_map "object.db_instances.db_instance_identifier"
   meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND lt(backup_retention_period, 30)) { db_instance_identifier } }"
-  meta_rule_node_triggers ['db_instance']
+  meta_rule_node_triggers({
+    'db_instance' => ['backup_retention_period']
+  })
 end
 
 coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
@@ -49,7 +51,9 @@ coreo_aws_rule "rds-no-auto-minor-version-upgrade" do
   raise_when [false]
   id_map "object.db_instances.db_instance_identifier"
   meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND eq(auto_minor_version_upgrade, \"false\")) { db_instance_identifier } }"
-  meta_rule_node_triggers ['db_instance']
+  meta_rule_node_triggers({
+    'db_instance' => ['auto_minor_version_upgrade']
+  })
 end
 
 coreo_aws_rule "rds-db-instance-unencrypted" do
@@ -68,7 +72,9 @@ coreo_aws_rule "rds-db-instance-unencrypted" do
   raise_when [false]
   id_map "object.db_instances.db_instance_identifier"
   meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND eq(storage_encrypted, \"false\")) { db_instance_identifier } }"
-  meta_rule_node_triggers ['db_instance']
+  meta_rule_node_triggers({
+    'db_instance' => ['storage_encrypted']
+  })
 end
 
 coreo_aws_rule "rds-db-snapshot-unencrypted" do
@@ -87,7 +93,9 @@ coreo_aws_rule "rds-db-snapshot-unencrypted" do
   raise_when [false]
   id_map "object.db_snapshots.db_snapshot_identifier"
   meta_rule_query "{ query(func: has(db_snapshot)) @filter(%<db_snapshot_filter>s AND eq(encrypted, \"false\")) { db_snapshot_identifier } }"
-  meta_rule_node_triggers ['db_snapshot']
+  meta_rule_node_triggers({
+    'db_instance' => ['encrypted']
+  })
 end
 
 coreo_aws_rule "rds-db-publicly-accessible" do
@@ -106,7 +114,9 @@ coreo_aws_rule "rds-db-publicly-accessible" do
   raise_when [true]
   id_map "object.db_instances.db_instance_identifier"
   meta_rule_query "{ query(func: has(db_instance)) @filter(%<db_instance_filter>s AND eq(publicly_accessible, \"true\")) { db_instance_identifier } }"
-  meta_rule_node_triggers ['db_instance']
+  meta_rule_node_triggers({
+    'db_instance' => ['publicly_accessible']
+  })
 end
 
 
