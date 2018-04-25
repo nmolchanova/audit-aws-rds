@@ -22,7 +22,7 @@ coreo_aws_rule "rds-short-backup-retention-period" do
   display_name "RDS short backup retention period"
   description "The affected RDS database has a short backup retention period (less than 30 days)."
   category "Dataloss"
-  suggested_action "Modify the backup retension period to increase it to greater than 30 days."
+  suggested_action "Modify the backup retention period to increase it to greater than 30 days."
   level "Low"
   meta_nist_171_id "3.8.9"
   objectives ["db_instances"]
@@ -91,7 +91,7 @@ coreo_aws_rule "rds-db-publicly-accessible" do
   category "Security"
   suggested_action "Consider whether the affected RDS database should be publicly accessible to the world. If not, modify the option which enables your RDS database to become publicly accessible."
   level "High"
-  meta_nist_171_id "3.13.2"
+  meta_nist_171_id "3.1.22, 3.13.2"
   objectives ["db_instances"]
   audit_objects ["object.db_instances.publicly_accessible"]
   operators ["=="]
